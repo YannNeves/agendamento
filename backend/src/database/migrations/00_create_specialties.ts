@@ -1,14 +1,13 @@
 import Knex from 'knex';
 
 export async function up(knex: Knex) {
-    return knex.schema.createTable('doctors', table => {
+    return knex.schema.createTable('specialties', table => {
         table.increments('id').primary();
         table.string('name').notNullable();
-        table.string('specialty').notNullable();
     });
 }
 
 
 export async function down(knex: Knex) {
-    return knex.schema.dropTable('doctors');
+    return knex.schema.dropTable('specialties');
 }

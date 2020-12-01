@@ -4,10 +4,25 @@ import knex from '../database/connection';
 class DoctorsController {
 
     async index(request: Request, response: Response) {
-        const doctors = await knex('doctors')
-        .orderBy('id', 'desc');
-  
-        return response.json(doctors);
+
+        const doctors = await knex('doctors').orderBy('id', 'desc');
+
+        const serializedDoctors = doctors.map( async doctor => {
+
+            const specialties = await knex('specialties_doctors')
+            .where('doctor_id', doctor.id)
+            .join('specialties', 'specialties_doctors.specialty_id', 'specialties.id')
+            .select('specialties.name');
+
+            return {
+                id: doctor.id,
+                name: doctor.name,
+                specialties: specialties
+            }
+
+        });
+
+        return Promise.all(serializedDoctors).then((completed)  => response.json(completed));     
     }
 
     async create(request: Request, response: Response) {
@@ -19,12 +34,21 @@ class DoctorsController {
         
         const doctor = {
             name,
-            specialty,
         };
   
         const trx = await knex.transaction();
+        const insertedIds =  await trx('doctors').insert(doctor);
+        const doctor_id = insertedIds[0];
 
-        await trx('doctors').insert(doctor);
+        const specialtyItems = specialty
+        .map((specialty_id: number) => {
+            return {
+                specialty_id,
+                doctor_id: doctor_id,
+            };
+        })
+
+        await trx('specialties_doctors').insert(specialtyItems);
     
         await trx.commit();
 

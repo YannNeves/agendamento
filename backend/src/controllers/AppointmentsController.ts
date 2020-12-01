@@ -15,13 +15,23 @@ class AppointmentsController{
         const {
             scheduling_at,
             patient_id,
-            doctor_id
+            doctor_id,
+            specialty_id
         } = request.body;
         
+        const speciality_doc = await knex('specialties_doctors')
+        .where('doctor_id', doctor_id)
+        .where('specialty_id', specialty_id);
+
+        if(speciality_doc.length === 0){
+            return response.status(400).json('Doutor escolhido não tem essa especilidade!');
+        }
+
         const patient = {
             scheduling_at,
             patient_id,
-            doctor_id
+            doctor_id,
+            specialty_id
         };
   
         const trx = await knex.transaction();
