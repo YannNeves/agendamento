@@ -5,6 +5,9 @@ class AppointmentsController{
 
     async index(request: Request, response: Response) {
         const appointments = await knex('appointments')
+        .leftJoin('patients', 'appointments.patient_id', 'patients.id')
+        .leftJoin('specialties', 'appointments.specialty_id', 'specialties.id')
+        .select('appointments.*', 'patients.name as patient', 'specialties.name as specialty')
         .orderBy('id', 'desc');
   
         return response.json(appointments);

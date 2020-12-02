@@ -38,6 +38,17 @@ class SpecialtiesController{
     
         return response.status(204).send();
     }
+
+    async findByDoctor(request: Request, response: Response) {
+        const { id } = request.params;
+
+        const specialties = await knex('specialties_doctors')
+        .where('doctor_id', id)
+        .join('specialties', 'specialties_doctors.specialty_id', 'specialties.id')
+        .select('specialties.*');
+  
+        return response.json(specialties);
+    }
 }
 
 export default SpecialtiesController;

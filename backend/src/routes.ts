@@ -16,6 +16,7 @@ const appointmentsController = new AppointmentsController();
 routes.get('/specialties', specialtiesController.index);
 routes.post('/specialties', specialtiesController.create);
 routes.post('/specialties/:id', specialtiesController.delete);
+routes.get('/specialties/:id', specialtiesController.findByDoctor);
 
 routes.get('/doctors', doctorsController.index);
 routes.post('/doctors', doctorsController.create);
